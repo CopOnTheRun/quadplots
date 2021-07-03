@@ -1,7 +1,7 @@
 from __future__ import annotations
 from functools import wraps
 from random import uniform
-from typing import NamedTuple
+from typing import NamedTuple, TypeVar, Any
 from collections.abc import Callable, Iterator
 
 class Point(NamedTuple):
@@ -10,9 +10,10 @@ class Point(NamedTuple):
     x: float
     y: float
 
-def recursive(meth):
+
+def recursive(meth: M) -> M:
     @wraps(meth)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self: Interval, *args: Any, **kwargs: Any) -> Interval:
         new_parts = []
         for p in self.partitions:
             if p.partitions:
@@ -211,3 +212,4 @@ class Method:
 
 Function = Callable[[float],float]
 Partition = list[Interval]
+M = TypeVar("M", bound=Callable[...,Interval])
