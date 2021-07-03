@@ -99,14 +99,3 @@ class Trapezoid(Quadrature):
     def graph(self) -> matplotlib.axes.Axes:
         raise NotImplementedError("It's on the TODO list")
 
-if __name__ == "__main__":
-    i = Interval(0,2)
-    i //= 4
-    i[2] //=2
-    j = Interval(0,2)
-    j //= 4
-    j[2] //=2
-    print(i)
-    print(j)
-    print(j==i)
-
