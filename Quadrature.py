@@ -15,23 +15,28 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot
 from Interval import Function, Interval, Method, Point
+from abc import ABC, abstractmethod
 
-class Riemann:
-    """A function on an interval. Take the sum using a certain method."""
-    def __init__(
-        self,
-        func: Function,
-        interval: Interval,
-        method: Method) -> None:
-        self.func: Function = func
-        self.interval: Interval = interval
-        self.method: Method = method
+class Quadrature(ABC):
+    """Abstract base class for methods of numerical integration which partition an interval into subintervals in order to calculate a definite intergral of a function."""
+
+    def __init__(self, func: Function, interval: Interval, method: Method) -> None:
+        self.func = func
+        self.interval = interval
+        self.method = method
 
     @property
     def points(self) -> list[Point]:
-        return [self.method.choose(self.func, p) for p in self.interval]
+        return [self.method.choose(self.func,p) for p in self.interval]
 
-    def sum(self) -> float:
+    @abstractmethod
+    def calc(self) -> float:
+        """The calculated output of the method used to approximate the function."""
+
+
+class Riemann(Quadrature):
+    """A function on an interval. Take the sum using a certain method."""
+    def calc(self) -> float:
         total: float = 0
 
         for partition, point, in zip(self.interval, self.points):
@@ -70,7 +75,7 @@ class Riemann:
         fig.tight_layout()
         return fig, ax
 
-class Trapezoid(Riemann):
+class Trapezoid(Quadrature):
 
     def __init__(self, func: Function, interval: Interval):
         super().__init__(func, interval, Method.left())
@@ -82,7 +87,7 @@ class Trapezoid(Riemann):
         y = self.func(x)
         return super().points + [Point(x,y)]
 
-    def sum(self) -> float:
+    def calc(self) -> float:
         total: float = 0
         for partition in self.interval:
             h = partition.length
