@@ -44,7 +44,7 @@ class Riemann(Quadrature):
 
         return total
 
-    def graph(self,) -> matplotlib.axes.Axes:
+    def graph(self,file_name=None) -> matplotlib.axes.Axes:
         #setting up matplotlib
         matplotlib.use("svg")
         pyplot.style.use("seaborn")
@@ -73,6 +73,10 @@ class Riemann(Quadrature):
         ax.bar(starts, y_coor, width=lengths, align="edge", edgecolor="black", linewidth=.5)
 
         fig.tight_layout()
+
+        if file_name:
+            fig.savefig(file_name)
+
         return fig, ax
 
 class Trapezoid(Quadrature):
