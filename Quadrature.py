@@ -11,11 +11,14 @@ Goals:
 """
 
 from __future__ import annotations
+from abc import ABC, abstractmethod
+from typing import Optional
+
 import numpy as np
 import matplotlib
 from matplotlib import pyplot
+
 from Interval import Function, Interval, Method, Point
-from abc import ABC, abstractmethod
 
 class Quadrature(ABC):
     """Abstract base class for methods of numerical integration which partition an interval into subintervals in order to calculate a definite intergral of a function."""
@@ -44,7 +47,8 @@ class Riemann(Quadrature):
 
         return total
 
-    def graph(self,file_name=None) -> matplotlib.axes.Axes:
+    def graph(self, file_name: Optional(str) = None) -> matplotlib.axes.Axes:
+        """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #setting up matplotlib
         matplotlib.use("svg")
         pyplot.style.use("seaborn")
