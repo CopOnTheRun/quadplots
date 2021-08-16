@@ -47,7 +47,7 @@ class Riemann(Quadrature):
 
         return total
 
-    def graph(self, file_name: Optional(str) = None) -> matplotlib.axes.Axes:
+    def graph(self, file_name: Optional[str] = None) -> matplotlib.axes.Axes:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #setting up matplotlib
         matplotlib.use("svg")
@@ -68,7 +68,7 @@ class Riemann(Quadrature):
         ax.plot(x,y,color="black")
 
         #plotting the points used for quadrature
-        x_coor, y_coor = [*zip(*self.points)]
+        x_coor, y_coor = zip(*self.points)
         ax.plot(x_coor,y_coor,".",color="black")
 
         #creating the bars
@@ -106,4 +106,3 @@ class Trapezoid(Quadrature):
 
     def graph(self) -> matplotlib.axes.Axes:
         raise NotImplementedError("It's on the TODO list")
-

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from functools import wraps
 from random import uniform
-from typing import NamedTuple, TypeVar, Any
+from typing import NamedTuple, TypeVar, Any, Optional
 from collections.abc import Callable, Iterator
 
 class Point(NamedTuple):
@@ -32,11 +32,14 @@ class Interval:
         self,
         start: float,
         end: float,
-        partitions: Partition = []) -> None:
+        partitions: Optional[Partition] = None) -> None:
 
         self.start: float = start
         self.end: float = end
-        self.partitions: Partition = partitions
+        if partitions:
+            self.partitions: Partition = partitions
+        else:
+            self.partitions = []
 
     @property
     def length(self) -> float:
