@@ -1,3 +1,4 @@
 *.ipynb binary
-
 *.svg binary
+
+examples.ipynb linguist-documentation
