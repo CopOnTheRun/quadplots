@@ -14,7 +14,7 @@ class Point(NamedTuple):
 def recursive(meth: M) -> M:
     @wraps(meth)
     def wrapper(self: Interval, *args: Any, **kwargs: Any) -> Interval:
-        new_parts = []
+        new_parts: list[Interval] = []
         for p in self.partitions:
             if p.partitions:
                 new_parts.append(wrapper(p, *args, **kwargs))
@@ -158,7 +158,7 @@ class Interval:
         self.partitions[key] = value
 
 class Method:
-    def __init__(self, chooser: Callable[[Function, Interval], Point]) -> None:
+    def __init__(self, chooser: PointGetter) -> None:
         self.chooser = chooser
 
     def choose(self, f: Function, i: Interval) -> Point:
@@ -172,7 +172,7 @@ class Method:
 
             #very important last point gets added as it's usually the max/min point on the interval
             points.append(Point(interval.end,f(interval.end)))
-            use_y = lambda point: point.y.real
+            use_y: Callable[[Point], float]= lambda point: point.y.real
             return max(points, key=use_y)
         return cls(get_max)
 
@@ -184,25 +184,25 @@ class Method:
 
             #very important last point gets added as it's usually the max/min point on the interval
             points.append(Point(interval.end,f(interval.end)))
-            use_y = lambda point: point.y.real
+            use_y: Callable[[Point], float] = lambda point: point.y.real
             return min(points, key=use_y)
         return cls(get_min)
 
     @classmethod
     def left(cls) -> Method:
         """Returns the leftmost point in the interval"""
-        method = lambda f,i : Point(i.start,f(i.start))
+        method: PointGetter = lambda f,i : Point(i.start,f(i.start))
         return cls(method)
 
     @classmethod
     def mid(cls) -> Method:
-        method = lambda f,i : Point(i.mid,f(i.mid))
+        method: PointGetter = lambda f,i : Point(i.mid,f(i.mid))
         return cls(method)
 
     @classmethod
     def right(cls) -> Method:
         """Returns the rightmost point in the interval"""
-        method = lambda f,i : Point(i.end,f(i.end))
+        method: PointGetter = lambda f,i : Point(i.end,f(i.end))
         return cls(method)
 
     @classmethod
@@ -214,5 +214,6 @@ class Method:
         return cls(get_rand)
 
 Function = Callable[[float],float]
+PointGetter = Callable[[Function, Interval], Point]
 Partition = list[Interval]
-M = TypeVar("M", bound=Callable[...,Interval])
+M = TypeVar("M", bound=Callable[..., Interval])
