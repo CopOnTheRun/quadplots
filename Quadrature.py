@@ -36,7 +36,6 @@ class Quadrature(ABC):
     def calc(self) -> float:
         """The calculated output of the method used to approximate the function."""
 
-
 class Riemann(Quadrature):
     """A function on an interval. Take the sum using a certain method."""
     def calc(self) -> float:
@@ -81,7 +80,7 @@ class Riemann(Quadrature):
         if file_name:
             fig.savefig(file_name)
 
-        return fig, ax
+        return fig
 
 class Trapezoid(Quadrature):
 
