@@ -51,6 +51,7 @@ class Riemann(Quadrature):
         #setting up matplotlib
         matplotlib.use("svg")
         pyplot.style.use("seaborn")
+        matplotlib.rcParams['text.usetex'] = True
 
         #creating the figure
         fig = pyplot.figure()
@@ -64,7 +65,9 @@ class Riemann(Quadrature):
         #creating function curve
         x = np.linspace(start, end, 200)
         y = self.func(x)
-        ax.plot(x,y,color="black")
+        label = r"$x^5$"
+        ax.plot(x, y, color="black", label=label)
+        ax.legend()
 
         #plotting the points used for quadrature
         x_coor, y_coor = zip(*self.points)

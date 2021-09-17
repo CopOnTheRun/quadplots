@@ -10,7 +10,6 @@ class Point(NamedTuple):
     x: float
     y: float
 
-
 def recursive(meth: M) -> M:
     @wraps(meth)
     def wrapper(self: Interval, *args: Any, **kwargs: Any) -> Interval:
