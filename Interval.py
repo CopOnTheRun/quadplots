@@ -3,6 +3,7 @@ from functools import wraps
 from random import uniform
 from typing import NamedTuple, TypeVar, Any, Optional
 from collections.abc import Callable, Iterator
+from dataclasses import dataclass
 
 class Point(NamedTuple):
     """Class representing a point on a 2-dimensional plane"""
@@ -211,6 +212,12 @@ class Method:
             return Point(x,f(x))
 
         return cls(get_rand)
+
+
+@dataclass
+class AnnotatedFunction:
+    func: Function
+    string: Optional[str] = None
 
 Function = Callable[[float],float]
 PointGetter = Callable[[Function, Interval], Point]

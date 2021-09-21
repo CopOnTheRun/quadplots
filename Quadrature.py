@@ -18,19 +18,19 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot
 
-from Interval import Function, Interval, Method, Point
+from Interval import AnnotatedFunction, Interval, Method, Point
 
 class Quadrature(ABC):
     """Abstract base class for methods of numerical integration which partition an interval into subintervals in order to calculate a definite intergral of a function."""
 
-    def __init__(self, func: Function, interval: Interval, method: Method) -> None:
+    def __init__(self, func: AnnotatedFunction, interval: Interval, method: Method) -> None:
         self.func = func
         self.interval = interval
         self.method = method
 
     @property
     def points(self) -> list[Point]:
-        return [self.method.choose(self.func,p) for p in self.interval]
+        return [self.method.choose(self.func.func,p) for p in self.interval]
 
     @abstractmethod
     def calc(self) -> float:
@@ -64,8 +64,8 @@ class Riemann(Quadrature):
 
         #creating function curve
         x = np.linspace(start, end, 200)
-        y = self.func(x)
-        label = r"$x^5$"
+        y = self.func.func(x)
+        label = f"$y = {self.func.string}$" if self.func.string else "$y=f(x)$"
         ax.plot(x, y, color="black", label=label)
         ax.legend()
 
@@ -87,22 +87,22 @@ class Riemann(Quadrature):
 
 class Trapezoid(Quadrature):
 
-    def __init__(self, func: Function, interval: Interval):
+    def __init__(self, func: AnnotatedFunction, interval: Interval):
         super().__init__(func, interval, Method.left())
 
     @property
     def points(self) -> list[Point]:
         """The same as super, but add an endpoint"""
         x = self.interval.end
-        y = self.func(x)
+        y = self.func.func(x)
         return super().points + [Point(x,y)]
 
     def calc(self) -> float:
         total: float = 0
         for partition in self.interval:
             h = partition.length
-            a = self.func(partition.start)
-            b = self.func(partition.end)
+            a = self.func.func(partition.start)
+            b = self.func.func(partition.end)
             total += (a+b)/2*h
         return total
 
