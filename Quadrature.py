@@ -106,5 +106,44 @@ class Trapezoid(Quadrature):
             total += (a+b)/2*h
         return total
 
-    def graph(self) -> matplotlib.axes.Axes:
-        raise NotImplementedError("It's on the TODO list")
+    def graph(self, file_name: Optional[str] = None) -> matplotlib.axes.Axes:
+        """Return and possibly write to a file, a graphic representation of the Riemann sum"""
+        #setting up matplotlib
+        matplotlib.use("svg")
+        pyplot.style.use("seaborn")
+        matplotlib.rcParams['text.usetex'] = True
+
+        #creating the figure
+        fig = pyplot.figure()
+        ax = fig.add_subplot(1,1,1)
+
+        #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
+        overshoot = .025*abs(self.interval.length)
+        start = self.interval.start - overshoot
+        end = self.interval.end + overshoot
+
+        #creating function curve
+        x = np.linspace(start, end, 200)
+        y = self.func.func(x)
+        label = f"$y = {self.func.string}$" if self.func.string else "$y=f(x)$"
+        ax.plot(x, y, color="black", label=label)
+        ax.legend()
+
+        #plotting the points used for quadrature
+        x_coor, y_coor = zip(*self.points)
+        ax.plot(x_coor,y_coor,".",color="black")
+
+        #creating the trapezoids
+        for point in self.points:
+            ax.vlines(point.x,0,point.y,color="black",lw=.5)
+        y_coor = [point.y for point in self.points]
+        x_coor = [point.x for point in self.points]
+        traps = ax.plot(x_coor, y_coor,lw=.5,color="black")
+        ax.fill_between(np.linspace(-2,2,len(y_coor)),y_coor)
+
+        fig.tight_layout()
+
+        if file_name:
+            fig.savefig(file_name)
+
+        return fig
