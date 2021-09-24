@@ -148,3 +148,32 @@ class Trapezoid(Quadrature):
             fig.savefig(file_name)
 
         return fig
+
+class Simpson(Quadrature):
+    def __init__(self, func: AnnotatedFunction, interval: Interval) -> None:
+        if len(interval.partitions) % 2 != 0:
+            message = "Simson's rule only works with an even number of partitions."
+            raise ValueError(message)
+        #current implementation requires partitions to be of equal length, but because of floating points I've gotta aim for close enough to equal length
+        if not all([interval[0].length - i.length < .001 for i in interval]):
+            message = "All partition lengths must be the same."
+            raise ValueError(message)
+        super().__init__(func, interval, Method.left())
+
+    @property
+    def points(self) -> list[Point]:
+        """The same as super, but add an endpoint"""
+        x = self.interval.end
+        y = self.func.func(x)
+        return super().points + [Point(x,y)]
+
+    def calc(self) -> float:
+        """Calculates the area using Simpson's rule. Note that unlike the other methods (trapezoid, Riemann), this method only works under the assumption that all partition sizes are the same. This is the reason that we can just multiply by the partition size/3 at the end and get area, instead of multiplying each subarea by the size of the partition.
+        I expect I'll update this in the future to allow for differing partition sizes if it's not too difficult."""
+        #not actual area until multiplied by partition_size/3
+        area: float = self.points[0].y + self.points[-1].y
+        for point in self.points[1:-1:2]:
+            area += 4*point.y
+        for point in self.points[2:-1:2]:
+            area += 2*point.y
+        return area*self.interval[0].length/3
