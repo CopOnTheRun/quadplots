@@ -120,6 +120,9 @@ class Simpson(Quadrature):
             area += 2*point.y
         return area*self.interval[0].length/3
 
+    def graph(self, ax: matplotlib.axes.Axes) -> None:
+        raise NotImplementedError
+
 def graph(quad: Quadrature, file_name: str = None) -> matplotlib.axes.Axes:
     """Return and possibly write to a file, a graphic representation of the Riemann sum"""
     #setting up matplotlib
