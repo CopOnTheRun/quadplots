@@ -92,38 +92,38 @@ class Trapezoid(Quadrature):
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
 def graph(quad: Quadrature, file_name: str = None) -> matplotlib.axes.Axes:
-        """Return and possibly write to a file, a graphic representation of the Riemann sum"""
-        #setting up matplotlib
-        matplotlib.use("svg")
-        pyplot.style.use("seaborn")
-        matplotlib.rcParams['text.usetex'] = True
+    """Return and possibly write to a file, a graphic representation of the Riemann sum"""
+    #setting up matplotlib
+    matplotlib.use("svg")
+    pyplot.style.use("seaborn")
+    matplotlib.rcParams['text.usetex'] = True
 
-        #creating the figure
-        fig = pyplot.figure()
-        ax = fig.add_subplot(1,1,1)
+    #creating the figure
+    fig = pyplot.figure()
+    ax = fig.add_subplot(1,1,1)
 
-        #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
-        overshoot = .025*abs(quad.interval.length)
-        start = quad.interval.start - overshoot
-        end = quad.interval.end + overshoot
+    #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
+    overshoot = .025*abs(quad.interval.length)
+    start = quad.interval.start - overshoot
+    end = quad.interval.end + overshoot
 
-        #creating function curve
-        x = np.linspace(start, end, 200)
-        y = quad.func.func(x)
-        label = f"$y = {quad.func.string}$" if quad.func.string else "$y=f(x)$"
-        ax.plot(x, y, color="black", label=label)
-        ax.legend()
+    #creating function curve
+    x = np.linspace(start, end, 200)
+    y = quad.func.func(x)
+    label = f"$y = {quad.func.string}$" if quad.func.string else "$y=f(x)$"
+    ax.plot(x, y, color="black", label=label)
+    ax.legend()
 
-        #plotting the points used for quadrature
-        x_coor, y_coor = zip(*quad.points)
-        ax.plot(x_coor,y_coor,".",color="black")
+    #plotting the points used for quadrature
+    x_coor, y_coor = zip(*quad.points)
+    ax.plot(x_coor,y_coor,".",color="black")
 
-        #creating the shapes
-        quad.graph(ax)
+    #creating the shapes
+    quad.graph(ax)
 
-        fig.tight_layout()
+    fig.tight_layout()
 
-        if file_name:
-            fig.savefig(file_name)
+    if file_name:
+        fig.savefig(file_name)
 
-        return fig
+    return fig
