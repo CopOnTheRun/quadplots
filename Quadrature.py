@@ -46,44 +46,15 @@ class Riemann(Quadrature):
 
         return total
 
-    def graph(self, file_name: Optional[str] = None) -> matplotlib.axes.Axes:
+    def graph(self, ax: matplotlib.axes.Axes) -> matplotlib.axes.Axes:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
-        #setting up matplotlib
-        matplotlib.use("svg")
-        pyplot.style.use("seaborn")
-        matplotlib.rcParams['text.usetex'] = True
-
-        #creating the figure
-        fig = pyplot.figure()
-        ax = fig.add_subplot(1,1,1)
-
-        #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
-        overshoot = .025*abs(self.interval.length)
-        start = self.interval.start - overshoot
-        end = self.interval.end + overshoot
-
-        #creating function curve
-        x = np.linspace(start, end, 200)
-        y = self.func.func(x)
-        label = f"$y = {self.func.string}$" if self.func.string else "$y=f(x)$"
-        ax.plot(x, y, color="black", label=label)
-        ax.legend()
-
         #plotting the points used for quadrature
-        x_coor, y_coor = zip(*self.points)
-        ax.plot(x_coor,y_coor,".",color="black")
+        _, y_coor = zip(*self.points)
 
         #creating the bars
         starts = [x.start for x in self.interval]
         lengths = [x.length for x in self.interval]
         ax.bar(starts, y_coor, width=lengths, align="edge", edgecolor="black", linewidth=.5)
-
-        fig.tight_layout()
-
-        if file_name:
-            fig.savefig(file_name)
-
-        return fig
 
 class Trapezoid(Quadrature):
 
@@ -106,7 +77,17 @@ class Trapezoid(Quadrature):
             total += (a+b)/2*h
         return total
 
-    def graph(self, file_name: Optional[str] = None) -> matplotlib.axes.Axes:
+    def graph(self, ax: matplotlib.axes.Axes) -> None:
+        """Return and possibly write to a file, a graphic representation of the Riemann sum"""
+        for point in self.points:
+            ax.vlines(point.x,0,point.y,color="black",lw=.5)
+        y_coor = [point.y for point in self.points]
+        x_coor = [point.x for point in self.points]
+        traps = ax.plot(x_coor, y_coor,lw=.5,color="black")
+        ax.fill_between(np.linspace(self.interval.start,self.interval.end,len(y_coor)),y_coor)
+        ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
+
+def graph(quad: Quadrature, file_name: str) -> matplotlib.axes.Axes:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #setting up matplotlib
         matplotlib.use("svg")
@@ -118,29 +99,23 @@ class Trapezoid(Quadrature):
         ax = fig.add_subplot(1,1,1)
 
         #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
-        overshoot = .025*abs(self.interval.length)
-        start = self.interval.start - overshoot
-        end = self.interval.end + overshoot
+        overshoot = .025*abs(quad.interval.length)
+        start = quad.interval.start - overshoot
+        end = quad.interval.end + overshoot
 
         #creating function curve
         x = np.linspace(start, end, 200)
-        y = self.func.func(x)
-        label = f"$y = {self.func.string}$" if self.func.string else "$y=f(x)$"
+        y = quad.func.func(x)
+        label = f"$y = {quad.func.string}$" if quad.func.string else "$y=f(x)$"
         ax.plot(x, y, color="black", label=label)
         ax.legend()
 
         #plotting the points used for quadrature
-        x_coor, y_coor = zip(*self.points)
+        x_coor, y_coor = zip(*quad.points)
         ax.plot(x_coor,y_coor,".",color="black")
 
-        #creating the trapezoids
-        for point in self.points:
-            ax.vlines(point.x,0,point.y,color="black",lw=.5)
-        y_coor = [point.y for point in self.points]
-        x_coor = [point.x for point in self.points]
-        traps = ax.plot(x_coor, y_coor,lw=.5,color="black")
-        ax.fill_between(np.linspace(self.interval.start,self.interval.end,len(y_coor)),y_coor)
-        ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
+        #creating the shapes
+        quad.graph(ax)
 
         fig.tight_layout()
 
