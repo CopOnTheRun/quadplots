@@ -36,6 +36,10 @@ class Quadrature(ABC):
     def calc(self) -> float:
         """The calculated output of the method used to approximate the function."""
 
+    @abstractmethod
+    def graph(self, ax: matplotlib.axes.Axes) -> None:
+        """Takes a matplotlib axes and graphs the instance's shapes onto the axes"""
+
 class Riemann(Quadrature):
     """A function on an interval. Take the sum using a certain method."""
     def calc(self) -> float:
@@ -87,7 +91,7 @@ class Trapezoid(Quadrature):
         ax.fill_between(np.linspace(self.interval.start,self.interval.end,len(y_coor)),y_coor)
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
-def graph(quad: Quadrature, file_name: str) -> matplotlib.axes.Axes:
+def graph(quad: Quadrature, file_name: str = None) -> matplotlib.axes.Axes:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #setting up matplotlib
         matplotlib.use("svg")
