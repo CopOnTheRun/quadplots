@@ -12,7 +12,8 @@ Goals:
 
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Iterable
+from itertools import zip_longest
 
 import numpy as np
 import matplotlib
@@ -122,6 +123,10 @@ class Simpson(Quadrature):
 
     def graph(self, ax: matplotlib.axes.Axes) -> None:
         raise NotImplementedError
+
+def chunk_iter(iters: Iterable[float], chunk_size: int):
+    chunks = [iter(iters)] * chunk_size
+    return zip_longest(*chunks,fillvalue=0)
 
 def graph(quad: Quadrature, file_name: str = None) -> matplotlib.axes.Axes:
     """Return and possibly write to a file, a graphic representation of the Riemann sum"""
