@@ -135,7 +135,21 @@ class Simpson(Quadrature):
         return area*self.interval[0].length/3
 
     def graph(self, ax: matplotlib.axes.Axes) -> None:
-        raise NotImplementedError
+        parabs = iter(self.parabolas())
+        step_size = self.interval[0].length
+        p = np.linspace(-step_size,step_size)
+        colors = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
+        for point in self.points:
+            ax.vlines(point.x,0,point.y,color="black",lw=.5)
+
+        for par0,par1 in chunk_iter(self.interval,2):
+            x = np.linspace(par0.start,par1.end)
+            A,B,C = next(parabs)
+            y = A*p**2 + B*p + C
+            ax.plot(x,y,lw=.5,color="black")
+            ax.fill_between(x,y,color=colors[0])
+
+        ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
 def chunk_iter(iters: Iterable[float], chunk_size: int):
     chunks = [iter(iters)] * chunk_size
