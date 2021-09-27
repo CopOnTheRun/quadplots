@@ -151,9 +151,9 @@ class Simpson(Quadrature):
 
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
-def chunk_iter(iters: Iterable[float], chunk_size: int):
+def chunk_iter(iters: Iterable[Any], chunk_size: int) -> Any:
     chunks = [iter(iters)] * chunk_size
-    return zip_longest(*chunks,fillvalue=0)
+    return zip_longest(*chunks)
 
 def graph(quad: Quadrature, file_name: str = None) -> matplotlib.axes.Axes:
     """Return and possibly write to a file, a graphic representation of the Riemann sum"""
