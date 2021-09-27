@@ -98,7 +98,7 @@ class Simpson(Quadrature):
             message = "Simson's rule only works with an even number of partitions."
             raise ValueError(message)
         #current implementation requires partitions to be of equal length, but because of floating points I've gotta aim for close enough to equal length
-        if not all([interval[0].length - i.length < .001 for i in interval]):
+        if not all((interval[0].length - i.length < 10**-3 for i in interval)):
             message = "All partition lengths must be the same."
             raise ValueError(message)
         super().__init__(func, interval, Method.left())
@@ -109,6 +109,19 @@ class Simpson(Quadrature):
         x = self.interval.end
         y = self.func.func(x)
         return super().points + [Point(x,y)]
+
+    def parabolas(self) -> list[tuple[float,float,float]]:
+        parabolas = []
+        size = self.interval[0].length
+        for p0,p1 in chunk_iter(self.interval,2):
+            y0 = self.func.func(p0.start)
+            y1 = self.func.func(p1.start)
+            y2 = self.func.func(p1.end)
+            A: float = (y0 - 2*y1 + y2)/(2*size**2)
+            B: float = (y2 - y0)/(2*size)
+            C: float = y1
+            parabolas.append((A,B,C))
+        return parabolas
 
     def calc(self) -> float:
         """Calculates the area using Simpson's rule. Note that unlike the other methods (trapezoid, Riemann), this method only works under the assumption that all partition sizes are the same. This is the reason that we can just multiply by the partition size/3 at the end and get area, instead of multiplying each subarea by the size of the partition.
