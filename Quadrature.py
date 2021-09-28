@@ -97,10 +97,6 @@ class Simpson(Quadrature):
         if len(interval.partitions) % 2 != 0:
             message = "Simson's rule only works with an even number of partitions."
             raise ValueError(message)
-        #current implementation requires partitions to be of equal length, but because of floating points I've gotta aim for close enough to equal length
-        if not all((interval[0].length - i.length < 10**-3 for i in interval)):
-            message = "All partition lengths must be the same."
-            raise ValueError(message)
         super().__init__(func, interval, Method.left())
 
     @property
@@ -117,33 +113,38 @@ class Simpson(Quadrature):
             y0 = self.func.func(p0.start)
             y1 = self.func.func(p1.start)
             y2 = self.func.func(p1.end)
-            A: float = (y0 - 2*y1 + y2)/(2*size**2)
-            B: float = (y2 - y0)/(2*size)
+            h = p0.end - p0.start
+            k = p1.end - p1.start
+            #I'll have to add the derivation to the docs, but it's the same
+            #as the textbook example, but things don't come out as nicely.
+            A: float = (h*(y2-y1)+k*(y0-y1))/(h*k*(h+k))
+            B: float = (h**2*(y2-y1) + k**2*(y1-y0))/(h*k*(h+k))
             C: float = y1
             parabolas.append((A,B,C))
         return parabolas
 
     def calc(self) -> float:
-        """Calculates the area using Simpson's rule. Note that unlike the other methods (trapezoid, Riemann), this method only works under the assumption that all partition sizes are the same. This is the reason that we can just multiply by the partition size/3 at the end and get area, instead of multiplying each subarea by the size of the partition.
-        I expect I'll update this in the future to allow for differing partition sizes if it's not too difficult."""
-        #not actual area until multiplied by partition_size/3
-        area: float = self.points[0].y + self.points[-1].y
-        for point in self.points[1:-1:2]:
-            area += 4*point.y
-        for point in self.points[2:-1:2]:
-            area += 2*point.y
-        return area*self.interval[0].length/3
+        area: float = 0
+        parabs = iter(self.parabolas())
+        for p0,p1 in chunk_iter(self.interval,2):
+            A,B,C = next(parabs)
+            h = p0.end - p0.start
+            k = p1.end - p1.start
+            area += 1/3*A*(k**3+h**3) + 1/2*B*(k**2-h**2) + C*(k+h)
+
+        return area
 
     def graph(self, ax: matplotlib.axes.Axes) -> None:
         parabs = iter(self.parabolas())
-        step_size = self.interval[0].length
-        p = np.linspace(-step_size,step_size)
         colors = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
         for point in self.points:
             ax.vlines(point.x,0,point.y,color="black",lw=.5)
 
         for par0,par1 in chunk_iter(self.interval,2):
             x = np.linspace(par0.start,par1.end)
+            h = par0.end - par0.start
+            k = par1.end - par1.start
+            p = np.linspace(-h,k)
             A,B,C = next(parabs)
             y = A*p**2 + B*p + C
             ax.plot(x,y,lw=.5,color="black")
