@@ -89,7 +89,7 @@ class Trapezoid(Quadrature):
         y_coor = [point.y for point in self.points]
         x_coor = [point.x for point in self.points]
         traps = ax.plot(x_coor, y_coor,lw=.5,color="black")
-        ax.fill_between(np.linspace(self.interval.start,self.interval.end,len(y_coor)),y_coor)
+        ax.fill_between(x_coor,y_coor)
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
 class Simpson(Quadrature):
