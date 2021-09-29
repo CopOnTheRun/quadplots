@@ -19,7 +19,7 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot
 
-from Interval import AnnotatedFunction, Interval, Method, Point
+from Interval import AnnotatedFunction, Interval, Method, Point, Points
 
 class Quadrature(ABC):
     """Abstract base class for methods of numerical integration which partition an interval into subintervals in order to calculate a definite intergral of a function."""
@@ -30,8 +30,8 @@ class Quadrature(ABC):
         self.method = method
 
     @property
-    def points(self) -> list[Point]:
-        return [self.method.choose(self.func.func,p) for p in self.interval]
+    def points(self) -> Points:
+        return Points([self.method.choose(self.func.func,p) for p in self.interval])
 
     @abstractmethod
     def calc(self) -> float:
@@ -46,20 +46,18 @@ class Riemann(Quadrature):
     def calc(self) -> float:
         total: float = 0
 
-        for partition, point, in zip(self.interval, self.points):
-            total += partition.length * point.y
+        for partition, y, in zip(self.interval, self.points.y):
+            total += partition.length * y
 
         return total
 
     def graph(self, ax: matplotlib.axes.Axes) -> matplotlib.axes.Axes:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
-        #plotting the points used for quadrature
-        _, y_coor = zip(*self.points)
-
         #creating the bars
         starts = [x.start for x in self.interval]
         lengths = [x.length for x in self.interval]
-        ax.bar(starts, y_coor, width=lengths, align="edge", edgecolor="black", linewidth=.5)
+        ys = self.points.y
+        ax.bar(starts, ys, width=lengths, align="edge", edgecolor="black", linewidth=.5)
 
 class Trapezoid(Quadrature):
 
@@ -67,11 +65,11 @@ class Trapezoid(Quadrature):
         super().__init__(func, interval, Method.left())
 
     @property
-    def points(self) -> list[Point]:
+    def points(self) -> Points:
         """The same as super, but add an endpoint"""
         x = self.interval.end
         y = self.func.func(x)
-        return super().points + [Point(x,y)]
+        return Points(super().points.points + [Point(x,y)])
 
     def calc(self) -> float:
         total: float = 0
@@ -86,10 +84,8 @@ class Trapezoid(Quadrature):
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         for point in self.points:
             ax.vlines(point.x,0,point.y,color="black",lw=.5)
-        y_coor = [point.y for point in self.points]
-        x_coor = [point.x for point in self.points]
-        traps = ax.plot(x_coor, y_coor,lw=.5,color="black")
-        ax.fill_between(x_coor,y_coor)
+        traps = ax.plot(self.points.x,self.points.y,lw=.5,color="black")
+        ax.fill_between(self.points.x,self.points.y)
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
 class Simpson(Quadrature):
@@ -100,11 +96,11 @@ class Simpson(Quadrature):
         super().__init__(func, interval, Method.left())
 
     @property
-    def points(self) -> list[Point]:
+    def points(self) -> Points:
         """The same as super, but add an endpoint"""
         x = self.interval.end
         y = self.func.func(x)
-        return super().points + [Point(x,y)]
+        return Points(super().points.points + [Point(x,y)])
 
     def parabolas(self) -> list[tuple[float,float,float]]:
         parabolas = []
@@ -180,8 +176,7 @@ def graph(quad: Quadrature, file_name: str = None) -> matplotlib.axes.Axes:
     ax.legend()
 
     #plotting the points used for quadrature
-    x_coor, y_coor = zip(*quad.points)
-    ax.plot(x_coor,y_coor,".",color="black")
+    ax.plot(quad.points.x,quad.points.y,".",color="black")
 
     #creating the shapes
     quad.graph(ax)

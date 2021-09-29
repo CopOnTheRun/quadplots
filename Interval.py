@@ -11,6 +11,23 @@ class Point(NamedTuple):
     x: float
     y: float
 
+@dataclass
+class Points:
+    points: list[Point]
+
+    @property
+    def y(self) -> list[float]:
+        return [point.y for point in self.points]
+
+    @property
+    def x(self) -> list[float]:
+        return [point.x for point in self.points]
+
+    def __getitem__(self, item: Any) -> Point:
+        return self.points[item]
+
+
+
 def recursive(meth: M) -> M:
     @wraps(meth)
     def wrapper(self: Interval, *args: Any, **kwargs: Any) -> Interval:
