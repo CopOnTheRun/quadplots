@@ -109,7 +109,6 @@ class Simpson(Quadrature):
 
     def parabolas(self) -> list[tuple[float,float,float]]:
         parabolas = []
-        size = self.interval[0].length
         for p0,p1 in chunk_iter(self.interval,2):
             y0 = self.func.func(p0.start)
             y1 = self.func.func(p1.start)
