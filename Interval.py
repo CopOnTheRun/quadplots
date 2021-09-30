@@ -26,8 +26,6 @@ class Points:
     def __getitem__(self, item: Any) -> Point:
         return self.points[item]
 
-
-
 def recursive(meth: M) -> M:
     @wraps(meth)
     def wrapper(self: Interval, *args: Any, **kwargs: Any) -> Interval:
@@ -229,7 +227,6 @@ class Method:
             return Point(x,f(x))
 
         return cls(get_rand)
-
 
 @dataclass
 class AnnotatedFunction:

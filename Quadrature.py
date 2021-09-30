@@ -33,23 +33,27 @@ class Quadrature(ABC):
     def points(self) -> Points:
         return Points([self.method.choose(self.func.func,p) for p in self.interval])
 
+    @property
     @abstractmethod
+    def areas(self) -> list[float]:
+        """Returns a list of areas based on the partitions calculated for each interval"""
+
     def calc(self) -> float:
         """The calculated output of the method used to approximate the function."""
+        return sum(self.areas)
 
     @abstractmethod
     def graph(self, ax: matplotlib.axes.Axes) -> None:
         """Takes a matplotlib axes and graphs the instance's shapes onto the axes"""
 
 class Riemann(Quadrature):
-    """A function on an interval. Take the sum using a certain method."""
-    def calc(self) -> float:
-        total: float = 0
 
-        for partition, y, in zip(self.interval, self.points.y):
-            total += partition.length * y
-
-        return total
+    @property
+    def areas(self) -> list[float]:
+        areas: list[float] = []
+        for partition, y in zip(self.interval, self.points.y):
+            areas.append(partition.length * y)
+        return areas
 
     def graph(self, ax: matplotlib.axes.Axes) -> matplotlib.axes.Axes:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
@@ -71,14 +75,15 @@ class Trapezoid(Quadrature):
         y = self.func.func(x)
         return Points(super().points.points + [Point(x,y)])
 
-    def calc(self) -> float:
-        total: float = 0
+    @property
+    def areas(self) -> list[float]:
+        areas: list[float] = []
         for partition in self.interval:
             h = partition.length
             a = self.func.func(partition.start)
             b = self.func.func(partition.end)
-            total += (a+b)/2*h
-        return total
+            areas.append((a+b)/2*h)
+        return areas
 
     def graph(self, ax: matplotlib.axes.Axes) -> None:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
@@ -119,16 +124,16 @@ class Simpson(Quadrature):
             parabolas.append((A,B,C))
         return parabolas
 
-    def calc(self) -> float:
-        area: float = 0
+    @property
+    def areas(self) -> list[float]:
+        areas: list[float] = []
         parabs = iter(self.parabolas())
         for p0,p1 in chunk_iter(self.interval,2):
             A,B,C = next(parabs)
             h = p0.end - p0.start
             k = p1.end - p1.start
-            area += 1/3*A*(k**3+h**3) + 1/2*B*(k**2-h**2) + C*(k+h)
-
-        return area
+            areas.append(1/3*A*(k**3+h**3) + 1/2*B*(k**2-h**2) + C*(k+h))
+        return areas
 
     def graph(self, ax: matplotlib.axes.Axes) -> None:
         parabs = iter(self.parabolas())
