@@ -147,7 +147,9 @@ class Simpson(Quadrature):
             p = np.linspace(-h,k)
             A,B,C = next(parabs)
             y = A*p**2 + B*p + C
-            ax.plot(x,y,lw=.5,color="black")
+            #parabola arcs
+            ax.plot(x,y,lw=.5,color = "black")
+            #parabola fill
             ax.fill_between(x,y,color=colors[0])
 
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
@@ -156,38 +158,58 @@ def chunk_iter(iters: Iterable[Any], chunk_size: int) -> Any:
     chunks = [iter(iters)] * chunk_size
     return zip_longest(*chunks)
 
-def graph(quad: Quadrature, file_name: str = None) -> matplotlib.axes.Axes:
-    """Return and possibly write to a file, a graphic representation of the Riemann sum"""
-    #setting up matplotlib
-    matplotlib.use("svg")
-    pyplot.style.use("seaborn")
-    matplotlib.rcParams['text.usetex'] = True
+class Graph:
+    def __init__(self, quad: Quadrature):
+        self.quad = quad
+        self.fig, self.ax = self.background()
 
-    #creating the figure
-    fig = pyplot.figure()
-    ax = fig.add_subplot(1,1,1)
+    def background(self):
+        """Return and possibly write to a file, a graphic representation of the Riemann sum"""
+        #setting up matplotlib
+        matplotlib.use("svg")
+        pyplot.style.use("seaborn")
+        #matplotlib.rcParams['text.usetex'] = True
 
-    #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
-    overshoot = .025*abs(quad.interval.length)
-    start = quad.interval.start - overshoot
-    end = quad.interval.end + overshoot
+        #creating the figure
+        fig = pyplot.figure()
+        ax = fig.add_subplot(1,1,1)
+        fig.tight_layout()
+        return fig, ax
 
-    #creating function curve
-    x = np.linspace(start, end, 200)
-    y = quad.func.func(x)
-    label = f"$y = {quad.func.string}$" if quad.func.string else "$y=f(x)$"
-    ax.plot(x, y, color="black", label=label)
-    ax.legend()
+    def curve(self):
+        #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
+        overshoot = .025*abs(self.quad.interval.length)
+        start = self.quad.interval.start - overshoot
+        end = self.quad.interval.end + overshoot
 
-    #plotting the points used for quadrature
-    ax.plot(quad.points.x,quad.points.y,".",color="black")
+        #creating function curve
+        x = np.linspace(start, end, 200)
+        y = self.quad.func.func(x)
+        line, =  self.ax.plot(x, y, color="black")
 
-    #creating the shapes
-    quad.graph(ax)
+        #legend and line label
+        label = f"$y = {self.quad.func.string}$" if self.quad.func.string else "$y=f(x)$"
+        line.set_label(label)
+        self.ax.legend()
+        return line
 
-    fig.tight_layout()
+    def points(self):
+        #plotting the points used for quadrature
+        return self.ax.plot(self.quad.points.x,self.quad.points.y,".",color="black")
 
-    if file_name:
-        fig.savefig(file_name)
+    def quadrature(self):
+        return self.quad.graph(self.fig.axes[0])
 
-    return fig
+    def write(self, filename: str):
+        self.fig.savefig(filename)
+
+def graph(quad: Quadrature, filename: str = None):
+    graph = Graph(quad)
+    graph.curve()
+    graph.points()
+    graph.quadrature()
+
+    if filename:
+        graph.write(filename)
+
+    return graph.fig
