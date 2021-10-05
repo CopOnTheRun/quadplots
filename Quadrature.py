@@ -42,6 +42,13 @@ class Quadrature(ABC):
         """The calculated output of the method used to approximate the function."""
         return sum(self.areas)
 
+    def error(self) -> float:
+        if (integral := self.func.integral):
+            calculated = self.calc()
+            actual = integral(self.interval.end) - integral(self.interval.start)
+            return (calculated-actual)/actual
+        raise ValueError("No integral was provided for this function.")
+
     @abstractmethod
     def graph(self, ax: matplotlib.axes.Axes) -> None:
         """Takes a matplotlib axes and graphs the instance's shapes onto the axes"""

@@ -232,6 +232,7 @@ class Method:
 class AnnotatedFunction:
     func: Function
     string: Optional[str] = None
+    integral: Optional[Function] = None
 
 Function = Callable[[float],float]
 PointGetter = Callable[[Function, Interval], Point]
