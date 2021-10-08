@@ -1,14 +1,17 @@
 import matplotlib
 from matplotlib import pyplot
 import numpy as np
+from typing import Sequence
 
 from Quadrature import Quadrature
 
 class Graph:
-    def __init__(self, quad: Quadrature, style = "seaborn"):
-        self.quad = quad
+    def __init__(self, quads: Sequence[Quadrature],
+            layout: tuple[int,int], style: str = "seaborn"):
+        self.quads = quads
         self.style = style
-        self.fig, self.ax = self.background()
+        self.layout = layout
+        self.fig, self.axes = self.background()
 
     def background(self):
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
@@ -18,33 +21,38 @@ class Graph:
 
         #creating the figure
         fig = pyplot.figure()
-        ax = fig.add_subplot(1,1,1)
+        num_quads = len(self.quads)
+        for i in range(1,num_quads+1):
+            fig.add_subplot(*self.layout,i,)
+
         fig.tight_layout()
-        return fig, ax
+        return fig, fig.axes
 
     def curve(self):
         #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
-        overshoot = .025*abs(self.quad.interval.length)
-        start = self.quad.interval.start - overshoot
-        end = self.quad.interval.end + overshoot
+        quad = self.quads[0]
+        overshoot = .025*abs(quad.interval.length)
+        start = quad.interval.start - overshoot
+        end = quad.interval.end + overshoot
 
         #creating function curve
         x = np.linspace(start, end, 200)
-        y = self.quad.func.func(x)
-        line, =  self.ax.plot(x, y, color="black")
+        y = quad.func.func(x)
+        label = f"$y = {quad.func.string}$" if quad.func.string else "$y=f(x)$"
+        for ax in self.axes:
+            line, = ax.plot(x,y,color="black")
+            line.set_label(label)
+            ax.legend()
 
-        #legend and line label
-        label = f"$y = {self.quad.func.string}$" if self.quad.func.string else "$y=f(x)$"
-        line.set_label(label)
-        self.ax.legend()
-        return line
 
     def points(self):
         #plotting the points used for quadrature
-        return self.ax.plot(self.quad.points.x,self.quad.points.y,".",color="black")
+        for quad,ax in zip(self.quads,self.axes):
+            ax.plot(quad.points.x,quad.points.y,".",color="black")
 
     def quadrature(self, color=None):
-        return self.quad.graph(self.fig.axes[0], color)
+        for quad, ax in zip(self.quads, self.axes):
+            quad.graph(ax)
 
     def write(self, filename: str):
         self.fig.savefig(filename)
