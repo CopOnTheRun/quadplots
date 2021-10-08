@@ -5,15 +5,15 @@ import numpy as np
 from Quadrature import Quadrature
 
 class Graph:
-    def __init__(self, quad: Quadrature):
+    def __init__(self, quad: Quadrature, style = "seaborn"):
         self.quad = quad
+        self.style = style
         self.fig, self.ax = self.background()
 
     def background(self):
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #setting up matplotlib
-        matplotlib.use("svg")
-        pyplot.style.use("seaborn")
+        pyplot.style.use(self.style)
         #matplotlib.rcParams['text.usetex'] = True
 
         #creating the figure

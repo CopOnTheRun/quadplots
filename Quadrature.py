@@ -61,7 +61,7 @@ class Riemann(Quadrature):
             areas.append(partition.length * y)
         return areas
 
-    def graph(self, ax: matplotlib.axes.Axes,color=None) -> matplotlib.axes.Axes:
+    def graph(self, ax: matplotlib.axes.Axes, color=None) -> matplotlib.axes.Axes:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #creating the bars
         starts = [x.start for x in self.interval]
@@ -94,7 +94,7 @@ class Trapezoid(Quadrature):
     def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
         for point in self.points:
             ax.vlines(point.x,0,point.y,color="black",lw=.5)
-        traps = ax.plot(self.points.x,self.points.y,lw=.5,color="black")
+        ax.plot(self.points.x,self.points.y,lw=.5,color="black")
         ax.fill_between(self.points.x,self.points.y,color=color)
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
