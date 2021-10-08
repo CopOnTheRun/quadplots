@@ -43,17 +43,17 @@ class Graph:
         #plotting the points used for quadrature
         return self.ax.plot(self.quad.points.x,self.quad.points.y,".",color="black")
 
-    def quadrature(self):
-        return self.quad.graph(self.fig.axes[0])
+    def quadrature(self, color=None):
+        return self.quad.graph(self.fig.axes[0], color)
 
     def write(self, filename: str):
         self.fig.savefig(filename)
 
-def graph(quad: Quadrature, filename: str = None):
+def graph(quad: Quadrature, color = None, filename: str = None):
     graph = Graph(quad)
     graph.curve()
     graph.points()
-    graph.quadrature()
+    graph.quadrature(color)
 
     if filename:
         graph.write(filename)

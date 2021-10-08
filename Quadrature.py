@@ -49,7 +49,7 @@ class Quadrature(ABC):
         raise ValueError("No integral was provided for this function.")
 
     @abstractmethod
-    def graph(self, ax: matplotlib.axes.Axes) -> None:
+    def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
         """Takes a matplotlib axes and graphs the instance's shapes onto the axes"""
 
 class Riemann(Quadrature):
@@ -61,13 +61,13 @@ class Riemann(Quadrature):
             areas.append(partition.length * y)
         return areas
 
-    def graph(self, ax: matplotlib.axes.Axes) -> matplotlib.axes.Axes:
+    def graph(self, ax: matplotlib.axes.Axes,color=None) -> matplotlib.axes.Axes:
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #creating the bars
         starts = [x.start for x in self.interval]
         lengths = [x.length for x in self.interval]
         ys = self.points.y
-        ax.bar(starts, ys, width=lengths, align="edge", edgecolor="black", linewidth=.5)
+        ax.bar(starts, ys, width=lengths, align="edge",color=color, edgecolor="black", linewidth=.5)
 
 class Trapezoid(Quadrature):
 
@@ -91,12 +91,11 @@ class Trapezoid(Quadrature):
             areas.append((a+b)/2*h)
         return areas
 
-    def graph(self, ax: matplotlib.axes.Axes) -> None:
-        """Return and possibly write to a file, a graphic representation of the Riemann sum"""
+    def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
         for point in self.points:
             ax.vlines(point.x,0,point.y,color="black",lw=.5)
         traps = ax.plot(self.points.x,self.points.y,lw=.5,color="black")
-        ax.fill_between(self.points.x,self.points.y)
+        ax.fill_between(self.points.x,self.points.y,color=color)
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
 class Simpson(Quadrature):
@@ -140,9 +139,8 @@ class Simpson(Quadrature):
             areas.append(1/3*A*(k**3+h**3) + 1/2*B*(k**2-h**2) + C*(k+h))
         return areas
 
-    def graph(self, ax: matplotlib.axes.Axes) -> None:
+    def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
         parabs = iter(self.parabolas())
-        colors = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
         for point in self.points:
             ax.vlines(point.x,0,point.y,color="black",lw=.5)
 
@@ -156,7 +154,7 @@ class Simpson(Quadrature):
             #parabola arcs
             ax.plot(x,y,lw=.5,color = "black")
             #parabola fill
-            ax.fill_between(x,y,color=colors[0])
+            ax.fill_between(x,y,color=color)
 
         ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
