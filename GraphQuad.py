@@ -11,12 +11,14 @@ class Graph:
         self.quads = quads
         self.style = style
         self.layout = layout
+        self.colors = None
         self.fig, self.axes = self.background()
 
     def background(self):
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #setting up matplotlib
         pyplot.style.use(self.style)
+        self.colors = iter(pyplot.rcParams['axes.prop_cycle'].by_key()['color'])
         #matplotlib.rcParams['text.usetex'] = True
 
         #creating the figure
@@ -44,6 +46,15 @@ class Graph:
             line.set_label(label)
             ax.legend()
 
+    def error(self, ):
+        if len(self.quads) >= self.layout[0]*self.layout[1]:
+            raise ValueError("Need a place to put the error graph.")
+        er_ax = self.fig.add_subplot(*self.layout,len(self.axes)+1)
+        er_ax.axhline(color="black",lw=.5)
+        bars = []
+        for i, quad in enumerate(self.quads):
+            y = quad.error()
+            er_ax.bar(i,y,width=1)
 
     def points(self):
         #plotting the points used for quadrature
@@ -52,7 +63,7 @@ class Graph:
 
     def quadrature(self, color=None):
         for quad, ax in zip(self.quads, self.axes):
-            quad.graph(ax)
+            quad.graph(ax,next(self.colors))
 
     def write(self, filename: str):
         self.fig.savefig(filename)
