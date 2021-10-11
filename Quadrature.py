@@ -45,7 +45,7 @@ class Quadrature(ABC):
         if (integral := self.func.integral):
             calculated = self.calc()
             actual = integral(self.interval.end) - integral(self.interval.start)
-            return (calculated-actual)/actual
+            return calculated - actual
         raise ValueError("No integral was provided for this function.")
 
     @abstractmethod
