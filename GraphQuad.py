@@ -49,7 +49,6 @@ class Graph:
             raise ValueError("Need a place to put the error graph.")
         er_ax = self.fig.add_subplot(*self.layout,len(self.axes)+1)
         er_ax.axhline(color="black",lw=.5)
-        bars = []
         colors = iter(self.colors)
         for i, quad in enumerate(self.quads):
             y = quad.error()
