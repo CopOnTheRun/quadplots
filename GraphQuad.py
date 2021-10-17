@@ -26,7 +26,6 @@ class Graph:
         for i in range(1,num_quads+1):
             fig.add_subplot(*self.layout,i)
 
-        fig.tight_layout()
         return fig, fig.axes
 
     def curve(self):
@@ -69,6 +68,7 @@ class Graph:
             quad.graph(ax,next(colors))
 
     def write(self, filename: str):
+        self.fig.tight_layout()
         self.fig.savefig(filename)
 
 def graph(quad: Quadrature, color = None, filename: str = None):
