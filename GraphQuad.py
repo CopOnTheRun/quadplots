@@ -14,6 +14,17 @@ class Graph:
         self.fig, self.axes = self.background()
         self.colors = pyplot.rcParams['axes.prop_cycle'].by_key()['color']
 
+    def animate(self, size:int):
+        for ax in self.axes:
+            ax.clear()
+
+        for quad in self.quads:
+            quad.interval //= size
+
+        self.points()
+        self.curve()
+        return self.quadrature()
+
     def background(self):
         """Return and possibly write to a file, a graphic representation of the Riemann sum"""
         #setting up matplotlib
@@ -63,8 +74,10 @@ class Graph:
         if colors:
             self.colors = colors
         colors = iter(self.colors)
+        artists = []
         for quad, ax in zip(self.quads, self.axes):
-            quad.graph(ax,next(colors))
+            artists.extend(quad.graph(ax,next(colors)))
+        return artists
 
     def write(self, filename: str):
         self.fig.tight_layout()

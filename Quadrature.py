@@ -67,7 +67,7 @@ class Riemann(Quadrature):
         starts = [x.start for x in self.interval]
         lengths = [x.length for x in self.interval]
         ys = self.points.y
-        ax.bar(starts, ys, width=lengths, align="edge",color=color, edgecolor="black", linewidth=.5)
+        return ax.bar(starts, ys, width=lengths, align="edge",color=color, edgecolor="black", linewidth=.5)
 
 class Trapezoid(Quadrature):
 
@@ -92,11 +92,13 @@ class Trapezoid(Quadrature):
         return areas
 
     def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
+        artists = []
         for point in self.points:
-            ax.vlines(point.x,0,point.y,color="black",lw=.5)
-        ax.plot(self.points.x,self.points.y,lw=.5,color="black")
-        ax.fill_between(self.points.x,self.points.y,color=color)
-        ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
+            artists.append(ax.vlines(point.x,0,point.y,color="black",lw=.5))
+        artists.extend(ax.plot(self.points.x,self.points.y,lw=.5,color="black"))
+        artists.append(ax.fill_between(self.points.x,self.points.y,color=color))
+        artists.append(ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black"))
+        return artists
 
 class Simpson(Quadrature):
     def __init__(self, func: AnnotatedFunction, interval: Interval) -> None:
@@ -141,8 +143,9 @@ class Simpson(Quadrature):
 
     def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
         parabs = iter(self.parabolas())
+        artists = []
         for point in self.points:
-            ax.vlines(point.x,0,point.y,color="black",lw=.5)
+            artists.append(ax.vlines(point.x,0,point.y,color="black",lw=.5))
 
         for par0,par1 in chunk_iter(self.interval,2):
             x = np.linspace(par0.start,par1.end)
@@ -152,11 +155,12 @@ class Simpson(Quadrature):
             A,B,C = next(parabs)
             y = A*p**2 + B*p + C
             #parabola arcs
-            ax.plot(x,y,lw=.5,color = "black")
+            artists.extend(ax.plot(x,y,lw=.5,color = "black"))
             #parabola fill
-            ax.fill_between(x,y,color=color)
+            artists.append(ax.fill_between(x,y,color=color))
 
-        ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
+        artists.append(ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black"))
+        return artists
 
 def chunk_iter(iters: Iterable[Any], chunk_size: int) -> Any:
     chunks = [iter(iters)] * chunk_size
