@@ -53,7 +53,19 @@ class Graph:
         for ax in self.axes:
             line, = ax.plot(x,y,color="black")
             line.set_label(label)
-            ax.legend()
+
+    def legend(self, axes_legend = True):
+        if axes_legend:
+            for ax in self.axes:
+                ax.legend()
+
+        if not axes_legend:
+            handles, labels = self.axes[0].get_legend_handles_labels()
+            self.fig.legend(handles, labels)
+
+    def title(self):
+        title_str = f"Quadrature approximation of ${self.quads[0].func.string}$"
+        return self.fig.suptitle(title_str)
 
     def error(self):
         if len(self.quads) >= self.layout[0]*self.layout[1]:
