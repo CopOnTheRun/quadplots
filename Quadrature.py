@@ -49,7 +49,7 @@ class Quadrature(ABC):
         raise ValueError("No integral was provided for this function.")
 
     @abstractmethod
-    def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
+    def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> matplotlib.axes.Axes:
         """Takes a matplotlib axes and graphs the instance's shapes onto the axes"""
 
 class Riemann(Quadrature):
