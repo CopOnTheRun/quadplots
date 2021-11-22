@@ -92,12 +92,11 @@ class Trapezoid(Quadrature):
         return areas
 
     def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
-        artists = []
-        artists.append(ax.vlines(self.points.x,0,self.points.y,color="black",lw=.5))
-        artists.extend(ax.plot(self.points.x,self.points.y,lw=.5,color="black"))
-        artists.append(ax.fill_between(self.points.x,self.points.y,color=color))
-        artists.append(ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black"))
-        return artists
+        v_lines = ax.vlines(self.points.x,0,self.points.y,color="black",lw=.5)
+        h_lines = ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
+        outlines, = ax.plot(self.points.x,self.points.y,lw=.5,color="black")
+        fill = ax.fill_between(self.points.x,self.points.y,color=color)
+        return v_lines, h_lines, outlines, fill
 
 class Simpson(Quadrature):
     def __init__(self, func: AnnotatedFunction, interval: Interval) -> None:
@@ -142,8 +141,8 @@ class Simpson(Quadrature):
 
     def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
         parabs = iter(self.parabolas())
-        artists = []
-        artists.append(ax.vlines(self.points.x,0,self.points.y,color="black",lw=.5))
+        v_lines = ax.vlines(self.points.x,0,self.points.y,color="black",lw=.5)
+        h_lines = ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black")
 
         for par0,par1 in chunk_iter(self.interval,2):
             x = np.linspace(par0.start,par1.end)
@@ -153,12 +152,11 @@ class Simpson(Quadrature):
             A,B,C = next(parabs)
             y = A*p**2 + B*p + C
             #parabola arcs
-            artists.extend(ax.plot(x,y,lw=.5,color = "black"))
+            outlines, = ax.plot(x,y,lw=.5,color = "black")
             #parabola fill
-            artists.append(ax.fill_between(x,y,color=color))
+            fill = ax.fill_between(x,y,color=color)
 
-        artists.append(ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black"))
-        return artists
+        return v_lines, h_lines, outlines, fill
 
 def chunk_iter(iters: Iterable[Any], chunk_size: int) -> Any:
     chunks = [iter(iters)] * chunk_size
