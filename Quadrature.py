@@ -93,8 +93,7 @@ class Trapezoid(Quadrature):
 
     def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
         artists = []
-        for point in self.points:
-            artists.append(ax.vlines(point.x,0,point.y,color="black",lw=.5))
+        artists.append(ax.vlines(self.points.x,0,self.points.y,color="black",lw=.5))
         artists.extend(ax.plot(self.points.x,self.points.y,lw=.5,color="black"))
         artists.append(ax.fill_between(self.points.x,self.points.y,color=color))
         artists.append(ax.hlines(0,self.interval.start,self.interval.end,lw=.5,color="black"))
@@ -144,8 +143,7 @@ class Simpson(Quadrature):
     def graph(self, ax: matplotlib.axes.Axes, color: str = None) -> None:
         parabs = iter(self.parabolas())
         artists = []
-        for point in self.points:
-            artists.append(ax.vlines(point.x,0,point.y,color="black",lw=.5))
+        artists.append(ax.vlines(self.points.x,0,self.points.y,color="black",lw=.5))
 
         for par0,par1 in chunk_iter(self.interval,2):
             x = np.linspace(par0.start,par1.end)
