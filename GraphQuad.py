@@ -151,14 +151,3 @@ class AnimatedGraph(Graph):
 
     def write(self, filename: str, *args, **kwargs):
         self.animation.save(filename,*args, **kwargs)
-
-def graph(quad: Quadrature, color = None, filename: str = None):
-    graph = Graph(quad)
-    graph.curve()
-    graph.points()
-    graph.quadrature(color)
-
-    if filename:
-        graph.write(filename)
-
-    return graph.fig
