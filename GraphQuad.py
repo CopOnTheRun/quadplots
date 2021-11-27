@@ -15,7 +15,7 @@ class Graph:
         self.fig, self.quad_axes, self.error_axes = self.create_subplots(error,**kwargs)
         self.colors = pyplot.rcParams['axes.prop_cycle'].by_key()['color']
         self.curve = self.get_curve()
-        self.error = self.get_error()
+        self.error = self.get_error() if error else None
         self.points = self.get_points()
         self.shapes = self.get_shapes()
         self.title = self.get_title()
@@ -117,12 +117,13 @@ class AnimatedGraph(Graph):
         self.animation = self.animate()
 
     def anim_init(self):
-        self.error_axes.clear()
-        x_start = min(self.frames) - 1
-        x_end = max(self.frames) + 1
-        self.error_axes.set_xlim(x_start,x_end)
-        min_y = abs(self.calc_min_error())
-        self.error_axes.set_yscale('symlog',linthresh=min_y,)
+        if self.error:
+            x_start = min(self.frames) - 1
+            x_end = max(self.frames) + 1
+            min_y = abs(self.calc_min_error())
+            self.error_axes.clear()
+            self.error_axes.set_xlim(x_start,x_end)
+            self.error_axes.set_yscale('symlog',linthresh=min_y,)
 
     def calc_min_error(self) -> int:
         min_y = abs(self.quads[0].error())
@@ -139,12 +140,13 @@ class AnimatedGraph(Graph):
         for quad in self.quads:
             quad.interval //= size
 
-        self.error = self.get_error()
+        if self.error:
+            self.error = self.get_error()
         self.curve = self.get_curve()
         self.points = self.get_points()
         self.shapes = self.get_shapes()
 
-        return *self.error, *self.points, *self.shapes
+        return *self.points, *self.shapes
 
     def animate(self):
         return FuncAnimation(self.fig, self.anim_func, self.frames, self.anim_init, interval=1000)
