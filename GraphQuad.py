@@ -120,18 +120,19 @@ class AnimatedGraph(Graph):
         if self.error:
             x_start = min(self.frames) - 1
             x_end = max(self.frames) + 1
-            min_y = abs(self.calc_min_error())
+            min_y = self.calc_min_error()
             self.error_axes.clear()
             self.error_axes.set_xlim(x_start,x_end)
-            self.error_axes.set_yscale('symlog',linthresh=min_y,)
+            self.error_axes.set_yscale('symlog', linthresh=min_y)
 
     def calc_min_error(self) -> int:
         min_y = abs(self.quads[0].error())
         max_interval = max(self.frames)
         for quad in self.quads:
             quad.interval //= max_interval
-            if abs(quad.error()) <= min_y:
-                min_y = abs(quad.error())
+            abs_error = abs(quad.error())
+            if abs_error < min_y:
+                min_y = abs_error
         return min_y
 
     def anim_func(self, size:int):
