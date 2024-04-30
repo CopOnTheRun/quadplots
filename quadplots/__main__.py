@@ -10,7 +10,7 @@ from sympy.printing import latex
 
 from quadplots.Interval import Interval, Method, AnnotatedFunction
 from quadplots.Quadrature import Riemann, Trapezoid, Simpson
-from quadplots.GraphQuad import Graph
+from quadplots.GraphQuad import Graph, AnimatedGraph
 
 METHODS = {"midpoint": Method.mid,
          "left": Method.left,
@@ -36,6 +36,12 @@ def get_args():
     parser.add_argument("end",
                         help = "The interval end",
                         type = int,)
+
+    parser.add_argument("--animate",
+                        help = "Turns the output into a .gif based on the frames specified",
+                        nargs = "+",
+                        type = int,
+                        )
 
     parser.add_argument("--partitions",
                         help = "Number partitions in the interval",
@@ -85,8 +91,13 @@ def main():
     method = METHODS[args.method]()
 
     quad = QUADS[args.quad_type](func, interval, method)
-    g = Graph([quad],(1,1),error=False)
-    g.write(args.out)
+    if frames := args.animate:
+        anim = AnimatedGraph(frames, [quad], (1,1), error=False)
+        stem = args.out.stem
+        anim.write(stem + ".gif", dpi = 300)
+    else:
+        g = Graph([quad],(1,1),error=False)
+        g.write(args.out)
 
 if __name__ == "__main__":
     main()
