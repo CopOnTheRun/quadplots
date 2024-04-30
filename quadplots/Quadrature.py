@@ -18,7 +18,7 @@ from itertools import zip_longest
 import numpy as np
 import matplotlib
 
-from Interval import AnnotatedFunction, Interval, Method, Point, Points
+from quadplots.Interval import AnnotatedFunction, Interval, Method, Point, Points
 
 class Quadrature(ABC):
     """Abstract base class for methods of numerical integration which partition an interval into subintervals in order to calculate a definite intergral of a function."""

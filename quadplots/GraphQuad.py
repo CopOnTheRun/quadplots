@@ -5,7 +5,7 @@ import numpy as np
 import sys
 from typing import Sequence, Optional, Iterable, Sized
 
-from Quadrature import Quadrature
+from quadplots.Quadrature import Quadrature
 
 class Graph:
     def __init__(self, quads: Sequence[Quadrature], layout: tuple[int,int],
