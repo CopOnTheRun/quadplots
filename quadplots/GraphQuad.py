@@ -57,12 +57,12 @@ class Graph:
         end = quad.interval.end + overshoot
 
         #creating function curve
-        x = np.linspace(start, end, 200)
-        y = quad.func.func(x)
+        xs = np.linspace(start, end, 200)
+        ys = [quad.func.func(x) for x in xs]
         label = f"$y = {quad.func.string}$" if quad.func.string else "$y=f(x)$"
         lines = []
         for ax in self.quad_axes:
-            line, = ax.plot(x,y,color="black")
+            line, = ax.plot(xs,ys,color="black")
             line.set_label(label)
             lines.append(line)
         return lines
