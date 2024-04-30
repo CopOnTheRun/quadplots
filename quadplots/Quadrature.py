@@ -99,9 +99,9 @@ class Trapezoid(Quadrature):
         return v_lines, h_lines, outlines, fill
 
 class Simpson(Quadrature):
-    def __init__(self, func: AnnotatedFunction, interval: Interval) -> None:
+    def __init__(self, func: AnnotatedFunction, interval: Interval, method: Method) -> None:
         if len(interval.partitions) % 2 != 0:
-            message = "Simson's rule only works with an even number of partitions."
+            message = "Simpson's rule only works with an even number of partitions."
             raise ValueError(message)
         super().__init__(func, interval, Method.left())
 
