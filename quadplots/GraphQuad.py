@@ -8,6 +8,7 @@ import numpy as np
 from quadplots.Quadrature import Quadrature
 
 class Graph:
+    """Class to visualize a sequence of Quadrature Objects"""
     def __init__(self, quads: Sequence[Quadrature], layout: tuple[int,int],
             error: bool = True, **kwargs):
         self.quads = quads
@@ -48,6 +49,7 @@ class Graph:
         return fig, quad_axes, error_axes
 
     def get_curve(self):
+        """Returns the lines objects for matplotlib"""
         #this makes it so that the function curve goes past the bounds of the interval. Purely asthetics.
         quad = self.quads[0]
         overshoot = .025*abs(quad.interval.length)
@@ -75,10 +77,12 @@ class Graph:
             self.fig.legend(handles, labels)
 
     def get_title(self):
+        """Creates a title for the graph"""
         title_str = f"Quadrature approximation of ${self.quads[0].func.string}$"
         return self.fig.suptitle(title_str)
 
     def get_error(self):
+        """The error lines for the difference of the actual value and the calculated value"""
         er_ax = self.error_axes
         er_ax.axhline(color="black",lw=.5)
         colors = iter(self.colors)
@@ -92,7 +96,7 @@ class Graph:
         return lines
 
     def get_points(self):
-        #plotting the points used for quadrature
+        """Points used for the quadrature"""
         points = []
         for quad,ax in zip(self.quads,self.quad_axes):
             point, = ax.plot(quad.points.x,quad.points.y,".",color="black")
@@ -100,6 +104,7 @@ class Graph:
         return points
 
     def get_shapes(self):
+        """Return the artist shapes"""
         colors = iter(self.colors)
         artists = []
         for quad, ax in zip(self.quads, self.quad_axes):
@@ -107,6 +112,7 @@ class Graph:
         return artists
 
     def write(self, filename: str):
+        """Write graph to a file"""
         self.fig.tight_layout()
         self.fig.savefig(filename)
 
