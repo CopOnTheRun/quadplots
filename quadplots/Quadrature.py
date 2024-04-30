@@ -71,7 +71,7 @@ class Riemann(Quadrature):
 
 class Trapezoid(Quadrature):
 
-    def __init__(self, func: AnnotatedFunction, interval: Interval):
+    def __init__(self, func: AnnotatedFunction, interval: Interval, method: Method = Method.left()):
         super().__init__(func, interval, Method.left())
 
     @property
