@@ -1,9 +1,9 @@
+from typing import Sequence, Iterable
+
 import matplotlib
 from matplotlib import pyplot
 from matplotlib.animation import FuncAnimation
 import numpy as np
-import sys
-from typing import Sequence, Optional, Iterable, Sized
 
 from quadplots.Quadrature import Quadrature
 

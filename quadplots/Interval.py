@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from functools import wraps
 from random import uniform
 from typing import NamedTuple, TypeVar, Any, Optional
