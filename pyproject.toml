@@ -1,0 +1,52 @@
+[build-system]
+requires      = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quadplots"
+description = "Create animations of simple numerical integration methods."
+readme = "README.md"
+version = "1.0.0"
+authors = [{name = "Chris Copley"}]
+license = {file = "LICENSE.md"}
+keywords = ["Simpson's Rule", "Trapezoidal rule", "Riemann Sum", "Visualization", "Graph", "Quadrature"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Education"
+]
+requires-python = ">=3.10"
+dependencies = [
+	"matplotlib",
+	"numpy",
+	"sympy",
+	"antlr4-python3-runtime==4.11"
+]
+
+[project.optional-dependencies]
+build = ["build","twine"]
+dev = ["bumpver","mypy","uv"]
+
+[project.urls]
+Repository = "https://github.com/CopOnTheRun/quadplots"
+Issues = "https://github.com/CopOnTheRun/quadplots/issues"
+
+[project.scripts]
+quadplots = "btrview.scripts.btrview:main"
+
+[tool.bumpver]
+current_version = "1.0.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"',
+]
+"quadplots/__init__.py" = ["{version}"]
