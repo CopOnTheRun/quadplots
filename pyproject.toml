@@ -33,7 +33,7 @@ Repository = "https://github.com/CopOnTheRun/quadplots"
 Issues = "https://github.com/CopOnTheRun/quadplots/issues"
 
 [project.scripts]
-quadplots = "btrview.scripts.btrview:main"
+quadplots = "quadplots.__main__:main"
 
 [tool.setuptools]
 packages = ["quadplots"]
