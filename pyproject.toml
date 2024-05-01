@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "quadplots"
 description = "Create animations of simple numerical integration methods."
 readme = "README.md"
-version = "1.0.1"
+version = "1.0.2"
 authors = [{name = "Chris Copley"}]
 license = {file = "LICENSE.md"}
 keywords = ["Simpson's Rule", "Trapezoidal rule", "Riemann Sum", "Visualization", "Graph", "Quadrature"]
@@ -39,7 +39,7 @@ quadplots = "btrview.scripts.btrview:main"
 packages = ["quadplots"]
 
 [tool.bumpver]
-current_version = "1.0.1"
+current_version = "1.0.2"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
