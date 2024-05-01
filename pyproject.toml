@@ -35,6 +35,9 @@ Issues = "https://github.com/CopOnTheRun/quadplots/issues"
 [project.scripts]
 quadplots = "btrview.scripts.btrview:main"
 
+[tool.setuptools]
+packages = ["quadplots"]
+
 [tool.bumpver]
 current_version = "1.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
