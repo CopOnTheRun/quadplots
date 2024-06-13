@@ -1,4 +1,5 @@
 import argparse
+import matplotlib as mpl
 from pathlib import Path
 from typing import Callable
 
@@ -67,6 +68,11 @@ def get_args():
                         action = "store_true",
                         )
 
+    parser.add_argument("--style",
+                        help = "The style to use for the graph",
+                        default = "ggplot"
+                        )
+
     parser.add_argument("--out",
                         help = "The file to save to",
                         type = Path,
@@ -82,7 +88,10 @@ def sympy_to_func(expr: Expr) -> Callable[[float], float]:
 
 def main():
     args = get_args()
-    plt.style.use("ggplot")
+    if args.style in mpl.style.available:
+        plt.style.use(args.style)
+    else:
+        raise ValueError(f"Not a valid style, choose from one of:\n{mpl.style.available}")
     sympy_func = parse_latex(args.func) if args.latex else parse_expr(args.func)
     f = sympy_to_func(sympy_func)
     F = sympy_to_func(sympy_func.integrate())
