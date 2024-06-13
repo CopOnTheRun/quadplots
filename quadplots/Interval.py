@@ -14,20 +14,24 @@ class Point(NamedTuple):
 
 @dataclass
 class Points:
+    """A collection of Point objects"""
     points: list[Point]
 
     @property
     def y(self) -> list[float]:
+        """All y coodinates in the Points"""
         return [point.y for point in self.points]
 
     @property
     def x(self) -> list[float]:
+        """All x coodinates in the Points"""
         return [point.x for point in self.points]
 
     def __getitem__(self, item: Any) -> Point:
         return self.points[item]
 
 def recursive(meth: M) -> M:
+    """Function to turn a regular call recursive"""
     @wraps(meth)
     def wrapper(self: Interval, *args: Any, **kwargs: Any) -> Interval:
         new_parts: list[Interval] = []
@@ -48,7 +52,7 @@ class Interval:
         self,
         start: float,
         end: float,
-        partitions: Optional[Partition] = None) -> None:
+        partitions: Partition | None = None) -> None:
 
         self.start: float = start
         self.end: float = end
@@ -64,6 +68,7 @@ class Interval:
 
     @property
     def mid(self) -> float:
+        """Returns the midpoint of an Interval"""
         return self.start + self.length * .5
 
     def partition(
@@ -71,7 +76,7 @@ class Interval:
         num: int,
         scheme: Function = lambda x: 1,
         ) -> list[Interval]:
-        """First we space the points out the way we want, then we scale the points to fit the interval length, then we shift the points to the interval position. I call it the ole space-scale-shift."""
+        """Partition the interval into 'num' intervals based on some partitioning scheme"""
 
         spaced: Partition = self._space(self.start, self.end, num, scheme)
         scale_factor = self.length/(spaced[-1].end - spaced[0].start)
@@ -109,14 +114,16 @@ class Interval:
 
     @recursive
     def __add__(self, other: float) -> Interval:
-        """Shift an interval and all subintervals by some amount."""
+        """Shift an interval and all subintervals by some amount to the right."""
         return type(self)(self.start+other, self.end+other)
     def __sub__(self, other: float) -> Interval:
-        """Shift an interval and all subintervals by some amount."""
+        """Shift an interval and all subintervals by some amount to the left."""
         return self + -other
 
     def __mul__(self, other: float) -> Interval:
-        """Need to make recursive, but I can't just slap the @recursive decorator on yet, I've got to probably restructure the class"""
+        """Stetch the interval by some amount"""
+        #Need to make recursive, but I can't just slap the @recursive 
+        #decorator on yet, I've got to probably restructure the class"""
 
         new_parts = []
         if self.partitions:
@@ -125,20 +132,25 @@ class Interval:
         return type(self)(self.start,self.start+self.length*other,new_parts)
 
     def __truediv__(self, other: float) -> Interval:
+        """Compress the interval by some amount"""
         return self*(1/other)
 
     def __floordiv__(self, num: int) -> Interval:
-        """Returns the current interval partitioned into num partitions. Probably an abuse of operator overloading but the floordiv symbol just looks like a partition so I had to."""
+        """Returns the current interval partitioned into num partitions.""" 
+        #Probably an abuse of operator overloading but the floordiv
+        #symbol just looks like a partition so I had to.
         partitions = self.partition(num)
         return type(self)(self.start,self.end,partitions)
 
     def __mod__(self, other: Function) -> Interval:
+        """Change the partitioning scheme of the current Interval"""
         num = len(self.partitions)
         new_partitions = self.partition(num,other)
         return type(self)(self.start,self.end,new_partitions)
 
     def __eq__(self, other: object) -> bool:
-        """Equal if all partitions are the same. Need to make recursive."""
+        """Compare the equality of two intervals"""
+        #Equal if all partitions are the same. Need to make recursive."""
         if not isinstance(other, Interval):
             return NotImplemented
 
@@ -149,7 +161,8 @@ class Interval:
 
 
     def __repr__(self) -> str:
-        """repr for Interval. Need to make recursive?"""
+        """repr for Interval"""
+        #Need to make recursive?
         return f"Interval({self.start},{self.end})"
 
     def __str__(self, level: int = 0) -> str:
@@ -174,6 +187,7 @@ class Interval:
         self.partitions[key] = value
 
 class Method:
+    """Class for picking a point from an interval"""
     def __init__(self, chooser: PointGetter) -> None:
         self.chooser = chooser
 
@@ -182,6 +196,7 @@ class Method:
 
     @classmethod
     def max(cls) -> Method:
+        """Returns a Method to retrieve the maximum y value in an Interval"""
         def get_max(f: Function, interval: Interval) -> Point:
             """Splits the interval into 101 Points, then returns the Point with the max y value."""
             points = [Point(i.start,f(i.start)) for i in interval // 100]
@@ -194,6 +209,7 @@ class Method:
 
     @classmethod
     def min(cls) -> Method:
+        """Returns a Method to retrieve the minimum y value in an Interval"""
         def get_min(f: Function, interval: Interval) -> Point:
             """Splits the interval into 101 Points, then returns the Point with the min y value."""
             points = [Point(i.start,f(i.start)) for i in interval // 100]
@@ -206,23 +222,25 @@ class Method:
 
     @classmethod
     def left(cls) -> Method:
-        """Returns the leftmost point in the interval"""
+        """Returns a Method to retrieve the leftmost point in the interval"""
         method: PointGetter = lambda f,i : Point(i.start,f(i.start))
         return cls(method)
 
     @classmethod
     def mid(cls) -> Method:
+        """Returns a Method to retrieve the midpoint in the interval"""
         method: PointGetter = lambda f,i : Point(i.mid,f(i.mid))
         return cls(method)
 
     @classmethod
     def right(cls) -> Method:
-        """Returns the rightmost point in the interval"""
+        """Returns a Method to retrieve the rightmost point in the interval"""
         method: PointGetter = lambda f,i : Point(i.end,f(i.end))
         return cls(method)
 
     @classmethod
     def random(cls) -> Method:
+        """Returns a Method to get a random point in the interval"""
         def get_rand(f: Function, i: Interval) -> Point:
             x = uniform(i.start,i.end)
             return Point(x,f(x))
@@ -231,6 +249,7 @@ class Method:
 
 @dataclass
 class AnnotatedFunction:
+    """Class that a Function and information about a function"""
     func: Function
     string: Optional[str] = None
     integral: Optional[Function] = None

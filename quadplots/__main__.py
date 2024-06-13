@@ -12,11 +12,12 @@ from quadplots.Interval import Interval, Method, AnnotatedFunction
 from quadplots.Quadrature import Riemann, Trapezoid, Simpson
 from quadplots.GraphQuad import Graph, AnimatedGraph
 
-METHODS = {"midpoint": Method.mid,
+METHODS = {"mid": Method.mid,
          "left": Method.left,
          "right": Method.right,
          "max": Method.max,
-         "min": Method.min,}
+         "min": Method.min,
+         "rand": Method.random,}
 
 QUADS = {"riemann": Riemann,
          "trapezoid": Trapezoid,
@@ -41,6 +42,7 @@ def get_args():
                         help = "Turns the output into a .gif based on the frames specified",
                         nargs = "+",
                         type = int,
+                        metavar = "FRAME",
                         )
 
     parser.add_argument("--partitions",

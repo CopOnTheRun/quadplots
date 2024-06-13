@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Module used to create and visulize Riemann sums.
-
-Goals:
-    * I'm learning about the factory method, and because there are different implementations with the same interface, it seems like this module could be a good way to practice the factory method pattern.
-    * refresher+practice with matplotlib or whatever plotting library I choose to work with
-    * replicate the picture on the wikipedia page for Riemann sums
-    * upload said picture to wikipedia in svg format (current is jpg I think)
-"""
+"""Module used to create and visulize Riemann sums."""
 
 from __future__ import annotations
 from abc import ABC, abstractmethod
@@ -30,6 +22,7 @@ class Quadrature(ABC):
 
     @property
     def points(self) -> Points:
+        """A list of points chosen based on the method and interval partitions"""
         return Points([self.method.choose(self.func.func,p) for p in self.interval])
 
     @property
@@ -42,6 +35,7 @@ class Quadrature(ABC):
         return sum(self.areas)
 
     def error(self) -> float:
+        """The difference between the calculated and actual value"""
         if (integral := self.func.integral):
             calculated = self.calc()
             actual = integral(self.interval.end) - integral(self.interval.start)
@@ -53,6 +47,7 @@ class Quadrature(ABC):
         """Takes a matplotlib axes and graphs the instance's shapes onto the axes"""
 
 class Riemann(Quadrature):
+    """A class to represent a Riemann sum"""
 
     @property
     def areas(self) -> list[float]:
@@ -70,6 +65,7 @@ class Riemann(Quadrature):
         return ax.bar(starts, ys, width=lengths, align="edge",color=color, edgecolor="black", linewidth=.5)
 
 class Trapezoid(Quadrature):
+    """A class to represent the Trapezoid method"""
 
     def __init__(self, func: AnnotatedFunction, interval: Interval, method: Method = Method.left()):
         super().__init__(func, interval, Method.left())
@@ -99,6 +95,7 @@ class Trapezoid(Quadrature):
         return v_lines, h_lines, outlines, fill
 
 class Simpson(Quadrature):
+    """A class to represent Simpson's rule"""
     def __init__(self, func: AnnotatedFunction, interval: Interval, method: Method) -> None:
         if len(interval.partitions) % 2 != 0:
             message = "Simpson's rule only works with an even number of partitions."

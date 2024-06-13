@@ -23,7 +23,7 @@ class Graph:
         self.fig.tight_layout()
 
     def create_subplots(self, error: bool, **kwargs):
-        """Return and possibly write to a file, a graphic representation of the Riemann sum"""
+        """Return a graphic representation of the Riemann sum"""
         #setting up matplotlib
         #matplotlib.rcParams['text.usetex'] = True
 
@@ -117,6 +117,7 @@ class Graph:
         self.fig.savefig(filename)
 
 class AnimatedGraph(Graph):
+    """Class representing a graph that can be animated"""
     def __init__(self, frames: Iterable[int], *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.frames = frames
@@ -156,7 +157,9 @@ class AnimatedGraph(Graph):
         return *self.points, *self.shapes
 
     def animate(self):
+        """Return the matplotlib.FuncAnimation instance of the AnimatedGraph"""
         return FuncAnimation(self.fig, self.anim_func, self.frames, self.anim_init, interval=1000)
 
     def write(self, filename: str, *args, **kwargs):
+        """Write the animation to a file"""
         self.animation.save(filename,*args, **kwargs)
