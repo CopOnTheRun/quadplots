@@ -59,7 +59,7 @@ def get_args():
     parser.add_argument("--method",
                         help = "The method type, only works with riemann sums",
                         choices = METHODS.keys(),
-                        default = "midpoint",
+                        default = "mid",
                         )
 
     parser.add_argument("--latex",
