@@ -55,6 +55,8 @@ class Graph:
         overshoot = .025*abs(quad.interval.length)
         start = quad.interval.start - overshoot
         end = quad.interval.end + overshoot
+        max_val = quad.method.max().choose(quad.func.func, quad.interval)
+        min_val = quad.method.min().choose(quad.func.func, quad.interval)
 
         #creating function curve
         xs = np.linspace(start, end, 200)
@@ -62,6 +64,13 @@ class Graph:
         label = f"$y = {quad.func.string}$" if quad.func.string else "$y=f(x)$"
         lines = []
         for ax in self.quad_axes:
+            y_lim_lower = min_val.y - min_val.y*.1
+            y_lim_upper = max_val.y + abs(max_val.y*.1)
+            diff = y_lim_upper - y_lim_lower
+            scale = .1
+            #ensures the axis doesn't jump around
+            ax.set_ylim(y_lim_lower-diff*scale,y_lim_upper+diff*scale)
+
             line, = ax.plot(xs,ys,color="black")
             line.set_label(label)
             lines.append(line)
